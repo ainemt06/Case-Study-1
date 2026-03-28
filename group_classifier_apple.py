@@ -42,12 +42,13 @@ def svm_tuning(X, y):
     print("Best parameters:", grid_search.best_params_)
     print("Best cross-val accuracy:", grid_search.best_score_)
 
+# fix param grid - not all solvers work with l1 regularization
 
 def logregression_tuning(X, y):
     param_grid = {
         'C': [0.1,1,10,100],
         'l1_ratio': np.linspace(0,1, num=5, endpoint=True),
-        'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
+        'solver': ['lbfgs', 'liblinear', 'saga']
     }
 
     grid_search = GridSearchCV(LogisticRegression(), param_grid, cv=kfold, scoring='accuracy')
