@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, GridSearchCV, train_test_split
+
+from sklearn.preprocessing import StandardScaler, GridSearchCV
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 
 kfold = KFold(n_splits=5, shuffle=True, random_state=1)
 
@@ -30,8 +32,6 @@ def svm_tuning(X, y):
     'kernel': ['rbf', 'poly', 'sigmoid']
     }
 
-
-
     grid_search = GridSearchCV(SVC(), param_grid, cv=kfold,scoring='accuracy')
 
     grid_search.fit(X, y)
@@ -54,8 +54,22 @@ def logregression_tuning(X, y):
     print("Best parameters:", grid_search.best_params_)
     print("Best cross-val accuracy:", grid_search.best_score_)
 
+def tree_tuning(X, y):
+    param_grid = {
+    'max_depth': [3, 5, 10, 20, None],
+    'min_samples_split': [2, 5, 10, 20],
+    'min_samples_leaf': [1, 2, 5, 10],
+    'max_features': ['sqrt', 'log2', None],
+    'criterion': ['gini', 'entropy'],
+    'class_weight': [None, 'balanced'],
+    }
 
+    grid_search = GridSearchCV(DecisionTreeClassifier(), param_grid, cv=kfold, scoring='accuracy')
 
+    grid_search.fit(X,y)
+
+    print("Best parameters:", grid_search.best_params_)
+    print("Best cross-val accuracy:", grid_search.best_score_)
 
 def kfold(model, X, y):
     scores = cross_val_score(model, X, y, cv=kfold, scoring='accuracy')
