@@ -39,8 +39,10 @@ def svm_tuning(X, y):
 
     grid_search.fit(X, y)
 
-    print("Best parameters:", grid_search.best_params_)
-    print("Best cross-val accuracy:", grid_search.best_score_)
+    print("Best parameters for SVM:", grid_search.best_params_)
+    print("Cross-val accuracy for best SVM:", grid_search.best_score_)
+
+    return grid_search.best_estimator_, grid_search.best_score_
 
 # fix param grid - not all solvers work with l1 regularization
 
@@ -55,8 +57,10 @@ def logregression_tuning(X, y):
 
     grid_search.fit(X, y)
 
-    print("Best parameters:", grid_search.best_params_)
-    print("Best cross-val accuracy:", grid_search.best_score_)
+    print("Best parameters for Logistic Regression:", grid_search.best_params_)
+    print("Cross-val accuracy for best Logistic Regression:", grid_search.best_score_)
+
+    return grid_search.best_estimator_, grid_search.best_score_
 
 def tree_tuning(X, y):
     param_grid = {
@@ -72,17 +76,44 @@ def tree_tuning(X, y):
 
     grid_search.fit(X,y)
 
-    print("Best parameters:", grid_search.best_params_)
-    print("Best cross-val accuracy:", grid_search.best_score_)
+    print("Best parameters for Decision Tree:", grid_search.best_params_)
+    print("Cross-val accuracy for best Decision Tree:", grid_search.best_score_)
+
+    return grid_search.best_estimator_, grid_search.best_score_
 
 
+def run_test_data(model, filepath=None):
+    if filepath is None:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.join(script_dir, 'Data', 'train.csv') # change to test when we get it
+
+    data = pd.read_csv(filepath)
+
+    X = data.drop('Quality', axis=1)
+    y = data['Quality']
+
+    scaler = StandardScaler()
+
+    X = scaler.fit_transform(X)
+
+    print(f"Best Model: {model.__class__} with parameters  {model.get_params()}")
+    print(f"Test Accuracy: {model.score(X, y)}")
 
 
 def main():
     X, y = preprocess_data()
-    svm_tuning(X,y)
-    logregression_tuning(X,y)
-    tree_tuning(X,y)
+    best_svm, svm_score = svm_tuning(X,y)
+    best_logregression, logregression_score =  logregression_tuning(X,y)
+    best_tree, tree_score = tree_tuning(X,y)
+
+    models = [best_svm, best_logregression, best_tree]
+    scores = np.array([svm_score, logregression_score, tree_score])
+
+    best_model = models[np.argmax(scores)]
+
+    run_test_data(best_model)
+
+
     
 
 if __name__ == "__main__": main()
