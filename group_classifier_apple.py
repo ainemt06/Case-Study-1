@@ -1,16 +1,21 @@
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from sklearn.preprocessing import StandardScaler, GridSearchCV
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold, cross_val_score, GridSearchCV
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 
 kfold = KFold(n_splits=5, shuffle=True, random_state=1)
 
-def preprocess_data(filepath='.\\Data\\train.csv'):
+
+def preprocess_data(filepath=None):
+    if filepath is None:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.join(script_dir, 'Data', 'train.csv')
 
     data = pd.read_csv(filepath)
 
@@ -20,8 +25,6 @@ def preprocess_data(filepath='.\\Data\\train.csv'):
     scaler = StandardScaler()
 
     X = scaler.fit_transform(X)
-    y = scaler.transform(y) # check if it should be fit or just transformed
-
     return X, y
 
 
@@ -71,12 +74,14 @@ def tree_tuning(X, y):
     print("Best parameters:", grid_search.best_params_)
     print("Best cross-val accuracy:", grid_search.best_score_)
 
-def kfold(model, X, y):
-    scores = cross_val_score(model, X, y, cv=kfold, scoring='accuracy')
-    return scores
+
 
 
 def main():
-    X, y = preprocess_data()    
+    X, y = preprocess_data()
+    svm_tuning(X,y)
+    logregression_tuning(X,y)
+    tree_tuning(X,y)
+    
 
 if __name__ == "__main__": main()
