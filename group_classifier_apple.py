@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, GridSearchCV, train_test_split
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.svm import SVC
 
 def preprocess_data(filepath='.\\Data\\train.csv'):
 
@@ -14,9 +15,31 @@ def preprocess_data(filepath='.\\Data\\train.csv'):
     scaler = StandardScaler()
 
     X = scaler.fit_transform(X)
-    y = scaler.fit_transform(y)
+    y = scaler.transform(y) # check if it should be fit or just transformed
 
     return X, y
+
+
+def svm_tuning(X, y):
+    param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': ['scale', 'auto', 0.1, 0.01],
+    'kernel': ['rbf', 'poly', 'sigmoid']
+    }
+
+    kfold = KFold(n_splits=5, shuffle=True, random_state=1)
+
+    grid_search = GridSearchCV(SVC(), param_grid, cv=kfold,scoring='accuracy')
+
+    grid_search.fit(X, y)
+
+    print("Best parameters:", grid_search.best_params_)
+    print("Best cross-val accuracy:", grid_search.best_score_)
+
+
+
+
+
 
 def kfold(model, X, y):
     kfold = KFold(n_splits=5, shuffle=True, random_state=1)
