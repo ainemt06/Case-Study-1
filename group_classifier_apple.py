@@ -49,8 +49,8 @@ def svm_tuning(X, y):
 def logregression_tuning(X, y):
     param_grid = {
         'C': [0.1,1,10,100],
-        'l1_ratio': np.linspace(0,1, num=5, endpoint=True),
-        'solver': ['lbfgs', 'liblinear', 'saga']
+        'l1_ratio': [0,1],
+        'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
     }
 
     grid_search = GridSearchCV(LogisticRegression(), param_grid, cv=kfold, scoring='accuracy')
@@ -85,7 +85,7 @@ def tree_tuning(X, y):
 def run_test_data(model, filepath=None):
     if filepath is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        filepath = os.path.join(script_dir, 'Data', 'train.csv') # change to test when we get it
+        filepath = os.path.join(script_dir, 'Data', 'test.csv') # change to test when we get it
 
     data = pd.read_csv(filepath)
 
