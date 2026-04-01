@@ -12,7 +12,6 @@
         - Varied C by factors of 10 from 0.1 to 100
         - Tried gamma as scale, auto, 0.1, or 0.01
     - For the kernel function we tested rbf, poly, and sigmoid
-    - We did not explore all the solvers for SVM because it was much slower to run so it made sense to limit ourselves to rbf, poly, and sigmoid
 - **Decision Trees**
     - We also did a grid search for the best parameter here
     - For parameters we varied max depth, minimum samples split, minimum samples leaf, and maximum features.
@@ -25,6 +24,9 @@
         - We tried None and balanced class weight
     - Decision Trees ran very fast so we could test many parameters to find the best
 ## Explain the data preprocessing algorithms you adopted and their impacts.
+
 ## Explain your hyperparameter tuning process and why it works.
 ## The reason about your final choice of classification model and its related data preprocessing and hyperparameter tuning algorithms.
+    We did not manually choose a classification model, but instead ran each of the models on the training set individually, then just automatically used the one with the highest accuracy. In order to minimize overfitting, each model was run using grid search cross validation across all available hyperparameters, so it would optimize each model individually and compare only the best specimens. We used a k-fold with k=5 within each cross-validator, in order to at least attempt to get as broad a range of validation data as possible
+
 ## Insightfulness and clarity of your observations and discussions. (Please be free to add the approaches you tried but failed before arriving at the best solution.)
