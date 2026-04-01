@@ -30,9 +30,9 @@ def preprocess_data(filepath=None):
 
 def svm_tuning(X, y):
     param_grid = {
-    'C': [0.1, 1, 10, 100],
-    'gamma': ['scale', 'auto', 0.1, 0.01],
-    'kernel': ['rbf', 'poly', 'sigmoid']
+        'C': [0.1, 1, 10, 100],
+        'gamma': ['scale', 'auto', 0.1, 0.01],
+        'kernel': ['rbf', 'poly', 'sigmoid']
     }
 
     grid_search = GridSearchCV(SVC(), param_grid, cv=kfold,scoring='accuracy')
@@ -64,12 +64,12 @@ def logregression_tuning(X, y):
 
 def tree_tuning(X, y):
     param_grid = {
-    'max_depth': [3, 5, 10, 20, None],
-    'min_samples_split': [2, 5, 10, 20],
-    'min_samples_leaf': [1, 2, 5, 10],
-    'max_features': ['sqrt', 'log2', None],
-    'criterion': ['gini', 'entropy'],
-    'class_weight': [None, 'balanced'],
+        'max_depth': [3, 5, 10, 20, None],
+        'min_samples_split': [2, 5, 10, 20],
+        'min_samples_leaf': [1, 2, 5, 10],
+        'max_features': ['sqrt', 'log2', None],
+        'criterion': ['gini', 'entropy'],
+        'class_weight': [None, 'balanced'],
     }
 
     grid_search = GridSearchCV(DecisionTreeClassifier(), param_grid, cv=kfold, scoring='accuracy')
