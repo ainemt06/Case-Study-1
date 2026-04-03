@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+# Imports for sklearn models
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import KFold, cross_val_score, GridSearchCV
 from sklearn.svm import SVC
@@ -11,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 kfold = KFold(n_splits=5, shuffle=True, random_state=1)
 
-
+# Scalar preprocessing and training set split
 def preprocess_data(filepath=None):
     if filepath is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -19,13 +20,15 @@ def preprocess_data(filepath=None):
 
     data = pd.read_csv(filepath)
 
+    # Drop quality so it can be used as the target
     X = data.drop('Quality', axis=1)
     y = data['Quality']
 
     scaler = StandardScaler()
 
+    # Fit and transform the data using the scaler
     X = scaler.fit_transform(X)
-    return X, y
+    return X, y, scaler
 
 
 def svm_tuning(X, y):
@@ -35,8 +38,10 @@ def svm_tuning(X, y):
         'kernel': ['rbf', 'poly', 'sigmoid']
     }
 
+    # Apply a grid search that tests all combinations and evaluates the best
     grid_search = GridSearchCV(SVC(), param_grid, cv=kfold,scoring='accuracy')
 
+    # Run the grid search on the data
     grid_search.fit(X, y)
 
     print("Best parameters for SVM:", grid_search.best_params_)
@@ -53,8 +58,10 @@ def logregression_tuning(X, y):
         'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
     }
 
+    # Apply a grid search that tests all combinations and evaluates the best
     grid_search = GridSearchCV(LogisticRegression(), param_grid, cv=kfold, scoring='accuracy')
 
+    # Run the grid search on the data
     grid_search.fit(X, y)
 
     print("Best parameters for Logistic Regression:", grid_search.best_params_)
@@ -72,8 +79,10 @@ def tree_tuning(X, y):
         'class_weight': [None, 'balanced'],
     }
 
+    # Apply a grid search that tests all combinations and evaluates the best
     grid_search = GridSearchCV(DecisionTreeClassifier(), param_grid, cv=kfold, scoring='accuracy')
 
+    # Run the grid search on the data
     grid_search.fit(X,y)
 
     print("Best parameters for Decision Tree:", grid_search.best_params_)
@@ -82,26 +91,25 @@ def tree_tuning(X, y):
     return grid_search.best_estimator_, grid_search.best_score_
 
 
-def run_test_data(model, filepath=None):
+def run_test_data(model, scaler, filepath=None):
+    # Obtain and clean the test data
     if filepath is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        filepath = os.path.join(script_dir, 'Data', 'test.csv') # change to test when we get it
+        filepath = os.path.join(script_dir, 'Data', 'test.csv')
 
     data = pd.read_csv(filepath)
 
     X = data.drop('Quality', axis=1)
     y = data['Quality']
 
-    scaler = StandardScaler()
-
-    X = scaler.fit_transform(X)
+    X = scaler.transform(X)
 
     print(f"Best Model: {model.__class__} with parameters  {model.get_params()}")
     print(f"Test Accuracy: {model.score(X, y)}")
 
 
 def main():
-    X, y = preprocess_data()
+    X, y, scaler = preprocess_data()
     best_svm, svm_score = svm_tuning(X,y)
     best_logregression, logregression_score =  logregression_tuning(X,y)
     best_tree, tree_score = tree_tuning(X,y)
@@ -111,7 +119,7 @@ def main():
 
     best_model = models[np.argmax(scores)]
 
-    run_test_data(best_model)
+    run_test_data(best_model, scaler)
 
 
     
