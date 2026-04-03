@@ -33,7 +33,7 @@ def preprocess_data(filepath=None):
 
 def svm_tuning(X, y):
     param_grid = {
-        'C': [0.1, 1, 10, 100],
+        'C': [0,1, 1, 10, 100],
         'gamma': ['scale', 'auto', 0.1, 0.01],
         'kernel': ['rbf', 'poly', 'sigmoid']
     }
